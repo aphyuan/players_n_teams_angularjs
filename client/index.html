@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>::Index</title>
+    <script src="angular/angular.js"></script>
+    <script src="angular-route/angular-route.js"></script>
+    <script>
+      var app = angular.module('app', ['ngRoute']);
+      //build the routes
+      app.config(function ($routeProvider){
+        $routeProvider
+         .when('/players', {
+           templateUrl: 'partials/players.html',
+           controller: 'PlayersController'
+         })
+         .when('/teams', {
+           templateUrl: 'partials/teams.html',
+           controller: 'TeamsController'
+         })
+         .when('/associations', {
+           templateUrl: 'partials/associations.html',
+           controller: 'AssociationsController'
+         })
+         .otherwise({
+           redirectTo: '/players'
+         });
+      })
+      //build the factories
+      //player factory
+      app.factory('playerFactory', function(){
+        var players = ['Joy'];
+        var factory = {};
+        factory.getPlayers = function(cb){
+          cb(players);
+        }
+        factory.addPlayer = function(player, cb){
+          players.push(player);
+          cb(players);
+        }
+        factory.deletePlayer = function(index, cb){
+          players.splice(index, 1);
+          cb(players);
+        }
+        return factory;
+      })
+      //team factory
+      app.factory('teamFactory', function(){
+        var teams = ['Lakers'];
+        var factory = {};
+        factory.getTeams = function(cb){
+          cb(teams);
+        }
+        factory.addTeam = function(team, cb){
+          teams.push(team);
+          cb(teams);
+        }
+        factory.deleteTeam = function(index, cb){
+          teams.splice(index, 1);
+          cb(teams);
+        }
+        return factory;
+      })
+      //build the controllers
+      //PlayersController
+      app.controller('PlayersController', function($scope, playerFactory){
+        $scope.players = [];
+        playerFactory.getPlayers(function(data){
+          $scope.players = data;
+        })
+        $scope.submitForm = function(){
+          playerFactory.addPlayer($scope.player, function(data){
+            $scope.players = data;
+            $scope.player = "";
+          })
+        }
+        $scope.delete = function(index){
+          playerFactory.deletePlayer(index, function(){});
+        }
+      })
+      //TeamsController
+      app.controller('TeamsController', function($scope, teamFactory){
+        $scope.teams = [];
+        teamFactory.getTeams(function(data){
+          $scope.teams = data;
+        })
+        $scope.submitForm = function(){
+          teamFactory.addTeam($scope.team, function(data){
+            $scope.teams = data;
+            $scope.team = "";
+          })
+        }
+        $scope.delete = function(index){
+          teamFactory.deleteTeam(index, function(){});
+        }
+      })
+      //association controller
+      app.controller('AssociationsController', function($scope, playerFactory, teamFactory){
+        $scope.associations = [];
+        $scope.players = [];
+        $scope.teams = [];
+        playerFactory.getPlayers(function(data){
+          $scope.players = data;
+        })
+        teamFactory.getTeams(function(data){
+          $scope.teams = data;
+        })
+        $scope.submitForm = function(){
+          $scope.associations.push($scope.association);
+          $scope.association = {};
+        }
+        $scope.delete = function(index){
+          $scope.associations.splice(index, 1);
+        }
+      })
+    </script>
+  </head>
+  <body>
+    <div ng-app='app'>
+      <a href="#/players">Players</a> :: <a href="#/teams">Teams</a> :: <a href="#/associations">associations</a>
+      <div ng-view="">
+      </div>
+    </div>
+  </body>
+</html>

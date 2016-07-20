@@ -1,0 +1,15 @@
+<form name="myForm" ng-submit="submitForm();">
+  Name <input type="text" ng-model="player">
+  <input type="submit" value="Add Player">
+</form>
+<hr>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Actions</th>
+  </tr>
+  <tr ng-repeat="player in players">
+    <td>{{player}}</td>
+    <td><input type="submit" value="Remove Player" ng-click="delete($index)"></td>
+  </tr>
+</table>
